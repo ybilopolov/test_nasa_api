@@ -10,3 +10,10 @@ Written and tested for Python 3.6.
 ### Usage
 
     $ pytest tests -sv
+
+### Notes
+
+Tested on Linux on vanilla Python 3.6 environment with pip. 
+For platforms where building scipy/numpy may be an issue (e.g. Windows)
+using any of the available scientific Python distributions (e.g. conda)
+is recommended. 
