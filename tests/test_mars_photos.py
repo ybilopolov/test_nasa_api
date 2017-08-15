@@ -1,15 +1,32 @@
+import logging
 import pytest
 
 import api_helpers as nasa
 from common import diff_img_by_urls
 
 
-@pytest.mark.parametrize('rover', ['curiosity', 'opportunity', 'spirit'])
+log = logging.getLogger(__name__)
+
+TEST_ROVERS = ['curiosity', 'opportunity', 'spirit']
+
+
+@pytest.mark.parametrize('rover', TEST_ROVERS)
+@pytest.mark.parametrize('sol', [1, 500, 1000])
+def test_sol_to_earth_date_conversion(rover, sol):
+    earth_date = nasa.sol_to_earth_date(rover, sol)
+    photos = nasa.get_mars_photos(rover, sol=sol, page=1)
+    if photos:
+        assert earth_date == photos[0]['earth_date']
+    else:
+        log.warning('no photos from %s on sol %d', rover, sol)
+
+
+@pytest.mark.parametrize('rover', TEST_ROVERS)
 @pytest.mark.parametrize('sol', [1000])
 @pytest.mark.parametrize('limit', [10])
 def test_sol_earth_equal(rover, sol, limit):
+    ed = nasa.sol_to_earth_date(rover, sol)
     by_sol = nasa.get_mars_photos(rover, sol=sol)[:limit]
-    ed = by_sol[0]['earth_date']
     by_earth_date = nasa.get_mars_photos(rover, earth_date=ed)[:limit]
 
     for sol_photo, ed_photo in zip(by_sol, by_earth_date):
@@ -22,7 +39,7 @@ def test_sol_earth_equal(rover, sol, limit):
         assert not diff_img_by_urls(sol_photo['img_src'], ed_photo['img_src'])
 
 
-@pytest.mark.parametrize('rover', ['curiosity', 'opportunity', 'spirit'])
+@pytest.mark.parametrize('rover', TEST_ROVERS)
 @pytest.mark.parametrize('sol', [1000])
 @pytest.mark.parametrize('threshold', [0.1])
 def test_cam_capacity(rover, sol, threshold):
