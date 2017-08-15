@@ -3,7 +3,7 @@ import api_helpers as nasa
 from common import diff_img_by_urls
 
 
-@pytest.mark.parametrize('rover', ['curiosity'])
+@pytest.mark.parametrize('rover', ['curiosity', 'opportunity', 'spirit'])
 @pytest.mark.parametrize('sol', [1000])
 @pytest.mark.parametrize('limit', [10])
 def test_sol_earth_equal(rover, sol, limit):
@@ -21,7 +21,7 @@ def test_sol_earth_equal(rover, sol, limit):
         assert not diff_img_by_urls(sol_photo['img_src'], ed_photo['img_src'])
 
 
-@pytest.mark.parametrize('rover', ['curiosity'])
+@pytest.mark.parametrize('rover', ['curiosity', 'opportunity', 'spirit'])
 @pytest.mark.parametrize('sol', [1000])
 @pytest.mark.parametrize('threshold', [0.1])
 def test_cam_capacity(rover, sol, threshold):
