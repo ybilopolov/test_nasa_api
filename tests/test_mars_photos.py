@@ -2,7 +2,7 @@ import logging
 import pytest
 
 import api_helpers as nasa
-from common import diff_img_by_urls
+from common import diff_img_by_urls, take, filter_dict
 
 
 log = logging.getLogger(__name__)
@@ -26,8 +26,8 @@ def test_sol_to_earth_date_conversion(rover, sol):
 @pytest.mark.parametrize('limit', [10])
 def test_sol_earth_equal(rover, sol, limit):
     ed = nasa.sol_to_earth_date(rover, sol)
-    by_sol = nasa.get_mars_photos(rover, sol=sol)[:limit]
-    by_earth_date = nasa.get_mars_photos(rover, earth_date=ed)[:limit]
+    by_sol = take(limit, nasa.get_mars_photos(rover, sol=sol))
+    by_earth_date = take(limit, nasa.get_mars_photos(rover, earth_date=ed))
 
     for sol_photo, ed_photo in zip(by_sol, by_earth_date):
         assert sol_photo == ed_photo  # check metadata
@@ -43,12 +43,12 @@ def test_sol_earth_equal(rover, sol, limit):
 @pytest.mark.parametrize('sol', [1000])
 @pytest.mark.parametrize('threshold', [0.1])
 def test_cam_capacity(rover, sol, threshold):
-    cam_cap = {}
-    for cam in nasa.get_rover_cameras(rover):
-        cam_cap[cam] = len(nasa.get_mars_photos(rover, camera=cam, sol=sol))
-
-    max_cap = max(cam_cap.values())
-    low_cap_cams = {cam: cap for cam, cap in cam_cap.items()
-                    if cap <= max_cap * threshold}
+    cam_capacity = {
+        cam: len(nasa.get_mars_photos(rover, camera=cam, sol=sol))
+        for cam in nasa.get_rover_cameras(rover)
+    }
+    max_capacity = max(cam_capacity.values())
+    is_capacity_low = lambda cap: cap <= max_capacity * threshold
+    low_cap_cams = filter_dict(is_capacity_low, cam_capacity)
 
     assert not low_cap_cams, 'low capacity cameras: %s' % low_cap_cams
