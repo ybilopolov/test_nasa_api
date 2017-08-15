@@ -17,6 +17,17 @@ SECONDS_IN_SOL = 24 * 3600 + 39 * 60 + 35.244
 
 
 def get(url, params=None, **kwargs):
+    """
+    Get an url from NASA API extending params with the API_KEY
+
+    Args:
+        url (str): API url to get
+        params (dict): query parameters for API request
+        **kwargs: any additional keyword arguments for requests.get call
+
+    Returns:
+        dict: deserialized JSON from API response
+    """
     params = params or {}
     params['api_key'] = API_KEY
     url = urllib.parse.urljoin(API_URLS['main'], url)
@@ -31,6 +42,19 @@ def get(url, params=None, **kwargs):
 
 
 def get_mars_photos(rover, camera=None, sol=None, earth_date=None, page=None):
+    """
+    Get list of all photos (as their metadata) for the given criteria
+
+    Args:
+        rover (str): rover name
+        camera (str, optional): camera name
+        sol (int, optional): sol to get photos on
+        earth_date (str, optional): earth date to get photos on (%Y-%d-%m)
+        page (int, optional): page number, no pagination if omitted
+
+    Returns:
+        list[dict]: list of dicts with photos metadata
+    """
     assert not (sol and earth_date), "Can't use sol and earth_date together"
     params = dict(camera=camera, page=page)
 
@@ -43,14 +67,26 @@ def get_mars_photos(rover, camera=None, sol=None, earth_date=None, page=None):
 
 
 def get_rover_info(rover):
+    """Get dict with rover's metadata"""
     return get(API_URLS['mars_rover'].format(rover=rover))['rover']
 
 
 def get_rover_cameras(rover):
+    """Get list of rover's cameras short names"""
     return [c['name'] for c in get_rover_info(rover)['cameras']]
 
 
 def sol_to_earth_date(rover, sol):
+    """
+    Convert sol date for specific router to the corresponding earth date
+
+    Args:
+        rover (str): rover name
+        sol (int): sol (Mars solar days since rover's landing)
+
+    Returns:
+        str: earth date formatted as specified by DATE_FORMAT
+    """
     landing_date_str = get_rover_info(rover)['landing_date']
     landing_date = datetime.strptime(landing_date_str, DATE_FORMAT)
     new_date = landing_date + timedelta(seconds=sol*SECONDS_IN_SOL)
