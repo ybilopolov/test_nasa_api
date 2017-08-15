@@ -37,7 +37,17 @@ def get_mars_photos(rover, camera=None, sol=None, earth_date=None, page=None):
     return get(API_URLS['mars_photos'].format(rover=rover), params)['photos']
 
 
-def get_rover_cameras(rover):
+def get_manifest_rover_cameras(rover):
     data = get(API_URLS['mars_manifests'].format(rover=rover))
     return sorted(set(cam for sol_photos in data['photo_manifest']['photos']
                       for cam in sol_photos['cameras']))
+
+
+def get_rover_cameras(rover):
+    sol_limit = 10
+    for sol in range(sol_limit):
+        for photo in get_mars_photos(rover, sol=sol, page=1):
+            return [c['name'] for c in photo['rover']['cameras']]
+    else:
+        raise RuntimeError('no photos for the first %d sols from %s. '
+                           % (sol_limit, rover) + "Can't get cameras")

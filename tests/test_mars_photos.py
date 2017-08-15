@@ -1,4 +1,5 @@
 import pytest
+
 import api_helpers as nasa
 from common import diff_img_by_urls
 
@@ -33,4 +34,4 @@ def test_cam_capacity(rover, sol, threshold):
     low_cap_cams = {cam: cap for cam, cap in cam_cap.items()
                     if cap <= max_cap * threshold}
 
-    assert not low_cap_cams
+    assert not low_cap_cams, 'low capacity cameras: %s' % low_cap_cams
