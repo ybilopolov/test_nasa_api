@@ -9,4 +9,4 @@ Written and tested for Python 3.6.
 
 ### Usage
 
-    $ pytest tests
+    $ pytest tests -sv
