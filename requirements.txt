@@ -1,0 +1,5 @@
+pytest==3.2.1
+pytest-pythonpath==0.7.1
+Pillow==4.2.1
+requests==2.18.3
+scipy==0.19.1
