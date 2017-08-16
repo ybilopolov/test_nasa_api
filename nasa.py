@@ -1,4 +1,8 @@
-import urllib.parse
+try:
+    from urllib.parse import urljoin
+except ImportError:
+    from urlparse import urljoin
+
 import requests
 from datetime import datetime, timedelta
 
@@ -30,7 +34,7 @@ def get(url, params=None, **kwargs):
     """
     params = params or {}
     params['api_key'] = API_KEY
-    url = urllib.parse.urljoin(API_URLS['main'], url)
+    url = urljoin(API_URLS['main'], url)
 
     resp = requests.get(url, params=params, **kwargs)
     data = resp.json()
