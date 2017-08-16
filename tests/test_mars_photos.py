@@ -2,7 +2,7 @@ import logging
 import pytest
 
 import api_helpers as nasa
-from common import diff_img_by_urls, take, filter_dict
+from util import diff_img_by_urls, take, filter_dict
 
 
 log = logging.getLogger(__name__)
