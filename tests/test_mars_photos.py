@@ -1,7 +1,7 @@
 import logging
 import pytest
 
-import api_helpers as nasa
+import nasa
 from util import diff_img_by_urls, take, filter_dict
 
 
